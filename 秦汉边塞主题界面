@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>秦汉边塞 · 烽火台沉浸体验</title>
+  <style>
+    /* ==================== 全局重置 & 宣纸基调 ==================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #efe9d8; /* 宣纸浅黄底 */
+      font-family: 'Noto Serif SC', 'KaiTi', '楷体', serif;
+      min-height: 100vh;
+      padding: 14px;
+    }
+    .app-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      background: rgba(237, 224, 196, 0.5);
+      border-radius: 48px 48px 24px 24px;
+      box-shadow: 0 12px 30px rgba(100, 70, 30, 0.2);
+      backdrop-filter: blur(2px);
+      border: 1px solid #c8b28b;
+      padding: 20px 14px 20px;
+    }
+    /* 顶部标题 */
+    .site-title {
+      text-align: center;
+      font-weight: 400;
+      letter-spacing: 6px;
+      color: #3d2b1a;
+      font-size: 1.2rem;
+      border-bottom: 1px dashed #bcaa84;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .site-title strong { font-size: 1.4rem; letter-spacing: 8px; }
+
+    /* ==================== 导航按钮 ==================== */
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      background: #dcc19c;
+      border: 2px solid #735f40;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #2d1f0e;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: inherit;
+      letter-spacing: 2px;
+      transition: all 0.15s;
+      box-shadow: 0 3px 0 #5f4b2e;
+    }
+    .nav-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #5f4b2e; }
+    .nav-btn.active {
+      background: #9d7a4b;
+      color: #f4ebd4;
+      border-color: #3f2f17;
+      box-shadow: 0 1px 0 #3f2f17;
+      transform: translateY(2px);
+    }
+
+    /* ==================== 模块容器 ==================== */
+    .module { display: none; }
+    .module.active { display: block; }
+
+    /* ==================== 各模块内部样式保持 (复用之前的全局) ==================== */
+    /* 烽火台模块内边距 */
+    .beacon-scene { margin: 0; }
+    /* 人物对话模块内边距 */
+    .people-grid { margin-bottom: 14px; }
+    /* 时间轴模块 */
+    .compare-wrap { margin-bottom: 10px; }
+    /* 简牍模块内边距 */
+    .bamboo-rack { margin-bottom: 12px; }
+
+    /* ==================== 底部人文结语 ==================== */
+    .human-footer {
+      margin-top: 30px;
+      padding: 18px 14px 8px;
+      border-top: 1px solid #bcaa84;
+      text-align: center;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #3d2b1a;
+      letter-spacing: 2px;
+      background: rgba(219, 196, 154, 0.25);
+      border-radius: 60px 60px 12px 12px;
+    }
+    .human-footer .weight {
+      color: #8B4513; /* 赭石 */
+      font-weight: 600;
+      display: inline-block;
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.7; text-shadow: none; }
+      50% { opacity: 1; text-shadow: 0 0 6px #b8860b; }
+    }
+
+    /* ==================== 响应式微调 ==================== */
+    @media (max-width: 500px) {
+      .nav-btn { font-size: 0.75rem; padding: 6px 12px; }
+      .site-title strong { font-size: 1.1rem; }
+      .human-footer { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <!-- 标题 -->
+  <div class="site-title">
+    <strong>🏮 秦汉边塞 · 烽火台 🏮</strong><br>
+    <span style="font-size:0.75rem; letter-spacing:4px;">居延汉简 · 沉浸式交互展厅</span>
+  </div>
+
+  <!-- 导航 -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" data-module="beacon">🔥 烽火狼烟</button>
+    <button class="nav-btn" data-module="dialogue">📜 边塞夜话</button>
+    <button class="nav-btn" data-module="timeline">⏳ 烽燧千年</button>
+    <button class="nav-btn" data-module="slips">🎋 汉简家书</button>
+  </div>
+
+  <!-- ============= 模块1：烽火台 ============= -->
+  <div id="beacon-module" class="module active">
+    <!-- 这里嵌入烽火台模块的全部HTML (内部样式已在全局中可用) -->
+    <div style="padding: 0 4px;">
+      <!-- 烽火台子模块 (从之前代码复制) -->
+      <div class="beacon-scene" style="background: #dac8a8; padding: 20px 10px 16px; border-radius: 100px 100px 30px 30px;">
+        <div class="tower-layers" id="towerLayers" style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <div class="layer fuel" data-layer="fuel" id="layerFuel" style="width:70%; max-width:260px; padding:10px; text-align:center; background:#b3935c; border:2px solid #8b6e48; border-radius:60px; cursor:pointer; user-select:none;">🔥 添柴草</div>
+          <div class="layer dung" data-layer="dung" id="layerDung" style="width:70%; max-width:260px; padding:10px; text-align:center; background:#7d613d; border:2px solid #8b6e48; border-radius:60px; cursor:pointer; user-select:none;">💩 加狼粪</div>
+          <div class="layer spark" data-layer="spark" id="layerSpark" style="width:70%; max-width:260px; padding:10px; text-align:center; background:#b35f2e; border:2px solid #8b6e48; border-radius:60px; cursor:pointer; user-select:none;">⛏️ 引火石</div>
+        </div>
+        <div class="smoke-area" id="smokeArea" style="min-height:80px; display:flex; justify-content:center; align-items:flex-end; margin:8px 0;">
+          <div class="smoke-group" id="smokeGroup" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;"></div>
+        </div>
+        <div class="enemy-buttons" style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:12px 0;">
+          <button class="enemy-btn active" data-enemy="1" style="background:#dcc19c; border:2px solid #735f40; padding:6px 14px; border-radius:60px; font-family:inherit; font-weight:600;">敌兵不足千人</button>
+          <button class="enemy-btn" data-enemy="2" style="background:#dcc19c; border:2px solid #735f40; padding:6px 14px; border-radius:60px; font-family:inherit; font-weight:600;">敌兵千人以上</button>
+          <button class="enemy-btn" data-enemy="3" style="background:#dcc19c; border:2px solid #735f40; padding:6px 14px; border-radius:60px; font-family:inherit; font-weight:600;">匈奴大举入侵</button>
+        </div>
+        <button class="reset-btn" id="resetBeacon" style="background:transparent; border:1px solid #7b6846; padding:4px 16px; border-radius:60px; cursor:pointer; font-family:inherit;">♻️ 重燃烽火</button>
+        <div class="history-box" style="background:#efe2cb; border-left:6px solid #7c5f37; padding:12px; margin-top:12px; border-radius:0 12px 12px 0;">
+          <p id="historyText" style="font-size:0.9rem; color:#2b1e0b;">点击柴草 · 狼粪 · 引火石</p>
+          <span class="citation" id="historySource" style="display:block; font-size:0.75rem; color:#6b5536; text-align:right;"></span>
+        </div>
+      </div>
+    </div>
+    <!-- 烽火台脚本 (已内联在全局前) -->
+  </div>
+
+  <!-- ============= 模块2：边塞对话 ============= -->
+  <div id="dialogue-module" class="module">
+    <div style="padding: 0 4px;">
+      <div style="text-align:center; margin-bottom:8px; color:#3d2b1a; font-size:0.8rem; letter-spacing:4px;">—— 据《居延汉简》戍卒文书 ——</div>
+      <div class="people-grid" style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <div class="person-card" data-person="old-soldier" style="background:#dcc9ab; border-radius:120px 120px 30px 30px; padding:12px 10px; width:100px; text-align:center; cursor:pointer; border:2px solid #a88d64; box-shadow:0 4px 0 #7c613e;">
+          <div style="font-size:2.2rem;">🏹🧓</div>
+          <div style="font-weight:600; color:#2d1f0e;">戍边老兵</div>
+          <div style="font-size:0.6rem; color:#5a452b;">居延·甲渠候官</div>
+        </div>
+        <div class="person-card" data-person="courier" style="background:#dcc9ab; border-radius:120px 120px 30px 30px; padding:12px 10px; width:100px; text-align:center; cursor:pointer; border:2px solid #a88d64; box-shadow:0 4px 0 #7c613e;">
+          <div style="font-size:2.2rem;">📯🏃</div>
+          <div style="font-weight:600; color:#2d1f0e;">驿卒</div>
+          <div style="font-size:0.6rem; color:#5a452b;">肩水金关·邮人</div>
+        </div>
+        <div class="person-card" data-person="camp-follower" style="background:#dcc9ab; border-radius:120px 120px 30px 30px; padding:12px 10px; width:100px; text-align:center; cursor:pointer; border:2px solid #a88d64; box-shadow:0 4px 0 #7c613e;">
+          <div style="font-size:2.2rem;">👩‍👧‍👦</div>
+          <div style="font-weight:600; color:#2d1f0e;">随军妇人</div>
+          <div style="font-size:0.6rem; color:#5a452b;">戍卒妻·缝补浆洗</div>
+        </div>
+      </div>
+      <div class="dialogue-box" style="background:#efe2cb; border-left:8px solid #7c5f37; padding:14px 16px; border-radius:12px 24px 24px 12px; min-height:100px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:600; color:#4b331b;">
+          <span>📜</span>
+          <span id="speakerName">居延汉简</span>
+        </div>
+        <div id="dialogueContent" style="font-size:0.95rem; line-height:1.7; color:#2b1e0b; margin-top:6px; min-height:3em;">
+          <span style="color:#5d4a2b; opacity:0.6; font-style:italic;">点选一位边塞人，听他说说心里话……</span>
+        </div>
+        <span class="dialogue-source" id="dialogueSource" style="display:block; font-size:0.75rem; color:#6b5536; text-align:right; margin-top:8px; border-top:1px dotted #c8b28b; padding-top:6px;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= 模块3：时间轴 ============= -->
+  <div id="timeline-module" class="module">
+    <div style="padding: 0 4px;">
+      <div style="text-align:center; margin-bottom:6px; font-size:0.8rem; color:#6b5536;">—— 拖动滑块穿越两千年 ——</div>
+      <div class="compare-wrap" style="display:flex; gap:8px; margin-bottom:14px; align-items:stretch; flex-direction:row;">
+        <div class="compare-col" style="flex:1; background:#dcc9ab; border-radius:24px 24px 12px 12px; padding:10px; text-align:center; border:1px solid #b29266;">
+          <div style="font-weight:700; color:#2f1f0c;">🏛️ 西汉 · 居延</div>
+          <div style="font-size:0.8rem; background:#e6d3b6; display:inline-block; padding:0 12px; border-radius:60px; margin:4px 0;" id="leftEra">西汉 · 公元前100年</div>
+          <div style="background:#cfba95; border-radius:12px; padding:10px 4px; margin:6px 0; font-size:2rem;" id="leftImage">🏜️🏯 <span style="font-size:0.7rem; display:block;">AI复原</span></div>
+          <div style="font-size:0.65rem; color:#5b462a;" id="leftCoords">📍 居延遗址·北纬41°</div>
+        </div>
+        <div class="compare-col" style="flex:1; background:#dcc9ab; border-radius:24px 24px 12px 12px; padding:10px; text-align:center; border:1px solid #b29266;">
+          <div style="font-weight:700; color:#2f1f0c;" id="rightTitle">🏯 明代 · 慕田峪</div>
+          <div style="font-size:0.8rem; background:#e6d3b6; display:inline-block; padding:0 12px; border-radius:60px; margin:4px 0;" id="rightEra">明代 · 公元1570年</div>
+          <div style="background:#cfba95; border-radius:12px; padding:10px 4px; margin:6px 0; font-size:2rem;" id="rightImage">🧱🏰 <span style="font-size:0.7rem; display:block;">砖石敌台</span></div>
+          <div style="font-size:0.65rem; color:#5b462a;" id="rightCoords">📍 慕田峪·北纬40°</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; padding:0 4px;">
+        <span style="font-size:1.2rem;">⬅️</span>
+        <input type="range" id="timelineSlider" min="0" max="100" value="35" style="flex:1; height:6px; background:#b79f78; border-radius:12px; -webkit-appearance:none;">
+        <span style="font-size:1.2rem;">➡️</span>
+      </div>
+      <div style="text-align:center; margin-top:6px; font-weight:700; color:#2b1b09; background:#e7d5b2; display:inline-block; padding:2px 20px; border-radius:60px;" id="eraIndicator">明代 · 慕田峪</div>
+    </div>
+  </div>
+
+  <!-- ============= 模块4：简牍 ============= -->
+  <div id="slips-module" class="module">
+    <div style="padding: 0 4px;">
+      <div style="text-align:center; margin-bottom:8px; font-size:0.8rem; color:#6b5536;">—— 点击竹简，展开千年前的思念 ——</div>
+      <div class="bamboo-rack" id="bambooRack" style="display:flex; flex-wrap:wrap; justify-content:center; gap:14px 18px;"></div>
+      <div class="detail-panel" style="background:#efe2cb; border-left:8px solid #7c5f37; padding:12px 16px; border-radius:12px 24px 24px 12px; min-height:90px;">
+        <div style="display:flex; gap:8px; font-weight:600; color:#4b331b; border-bottom:1px dashed #b29266; padding-bottom:6px; margin-bottom:6px;">
+          <span id="detailIndex">简牍 · 甲</span>
+          <span id="detailPerson" style="background:#b3915e; color:#fbf0db; padding:0 12px; border-radius:30px; font-size:0.8rem;">戍卒 田惇</span>
+        </div>
+        <div id="detailContent" style="font-size:0.9rem; line-height:1.7; color:#2b1e0b;">
+          <span style="color:#5d4a2b; opacity:0.6; font-style:italic;">点选上方竹简，览阅家书</span>
+        </div>
+        <span class="detail-source" id="detailSource" style="display:block; font-size:0.7rem; color:#6b5536; text-align:right; border-top:1px dotted #c8b28b; padding-top:4px; margin-top:6px;"></span>
+      </div>
+      <button class="reset-bamboo" id="resetBamboo" style="margin-top:10px; background:transparent; border:1px solid #7b6846; padding:4px 18px; border-radius:60px; cursor:pointer; font-family:inherit;">🔄 收起全部</button>
+    </div>
+  </div>
+
+  <!-- ============= 底部人文结语 ============= -->
+  <div class="human-footer">
+    <p>AI能复原狼烟四起的边关，</p>
+    <p>可烽火台下<span class="weight">戍卒的思念与苦难</span>，</p>
+    <p>是独属于<span class="weight">人</span>的历史重量。</p>
+    <p style="font-size:0.7rem; margin-top:8px; opacity:0.5;">—— 谨以此展致敬《居延汉简》中的无名戍卒</p>
+  </div>
+</div>
+
+<!-- ======================================================================== -->
+<!-- 全局脚本：导航切换 + 各模块功能（精简整合） -->
+<script>
+  (function() {
+    // ==================== 导航 ====================
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const modules = {
+      beacon: document.getElementById('beacon-module'),
+      dialogue: document.getElementById('dialogue-module'),
+      timeline: document.getElementById('timeline-module'),
+      slips: document.getElementById('slips-module')
+    };
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        navBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const mod = this.dataset.module;
+        Object.keys(modules).forEach(key => {
+          modules[key].classList.toggle('active', key === mod);
+        });
+      });
+    });
+
+    // ==================== 烽火台状态 ====================
+    // (简化版，核心逻辑已内联在HTML中，主要依赖全局变量和事件)
+    const layerFuel = document.getElementById('layerFuel');
+    const layerDung = document.getElementById('layerDung');
+    const layerSpark = document.getElementById('layerSpark');
+    const smokeGroup = document.getElementById('smokeGroup');
+    const historyText = document.getElementById('historyText');
+    const historySource = document.getElementById('historySource');
+    let currentEnemy = 1;
+    let step = 0;
+    let ignited = false;
+
+    function resetBeacon() {
+      step = 0; ignited = false;
+      [layerFuel, layerDung, layerSpark].forEach(el => {
+        el.classList.remove('done', 'disabled', 'ignite-ready');
+        el.style.opacity = '1'; el.style.pointerEvents = 'auto';
+      });
+      layerFuel.innerText = '🔥 添柴草';
+      layerDung.innerText = '💩 加狼粪';
+      layerSpark.innerText = '⛏️ 引火石';
+      smokeGroup.innerHTML = '';
+      historyText.innerText = '烽燧静候 · 点击添柴草开始。';
+      historySource.innerText = '';
+    }
+
+    function generateSmokeByEnemy() {
+      smokeGroup.innerHTML = '';
+      let count = currentEnemy === 1 ? 1 : (currentEnemy === 2 ? 3 : 6);
+      for (let i=0; i<count; i++) {
+        let puff = document.createElement('div');
+        puff.className = 'smoke-puff';
+        puff.style.width = '36px'; puff.style.height = '36px';
+        puff.style.background = 'radial-gradient(circle at 30% 30%, #b6a48a, #827157 70%, #4f3e2a)';
+        puff.style.borderRadius = '60% 40% 50% 30%';
+        puff.style.opacity = '0';
+        puff.style.animation = 'rise-smoke 2.8s ease-out forwards';
+        puff.style.animationDelay = (i*0.2)+'s';
+        smokeGroup.appendChild(puff);
+      }
+    }
+
+    layerFuel.addEventListener('click', function() {
+      if (ignited || step>=1) return;
+      step=1; this.innerText='✔ 柴草已堆'; this.classList.add('done');
+      historyText.innerText='柴草已备，可添加狼粪。';
+    });
+    layerDung.addEventListener('click', function() {
+      if (ignited || step!==1) return;
+      step=2; this.innerText='✔ 狼粪已加'; this.classList.add('done');
+      historyText.innerText='狼粪已加，请点击引火石点燃！';
+    });
+    layerSpark.addEventListener('click', function() {
+      if (ignited || step!==2) return;
+      step=3; ignited=true; this.innerText='✨ 狼烟已起'; this.classList.add('done');
+      [layerFuel, layerDung, layerSpark].forEach(el => { el.style.pointerEvents='none'; });
+      generateSmokeByEnemy();
+      let txt = currentEnemy===1?'敌兵不足千人 · 仅1堆烽烟':(currentEnemy===2?'敌兵千人以上 · 2烽1火':'匈奴大举入侵 · 三烽三火');
+      historyText.innerText = txt+'  《汉书·霍光传》引汉烽火制度';
+      historySource.innerText = '—— 《居延汉简》烽火品约';
+    });
+    document.querySelectorAll('.enemy-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.enemy-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentEnemy = parseInt(this.dataset.enemy);
+        if (ignited) resetBeacon();
+      });
+    });
+    document.getElementById('resetBeacon').addEventListener('click', resetBeacon);
+    resetBeacon();
+
+    // ==================== 对话模块 ====================
+    const personData = {
+      'old-soldier': {
+        lines: ['“塞外苦寒，九月即霜。手持戟，目望烽，夜不敢寐。去家三千里，书不得达。”','“日食二升，稗麦半之。有时断粮，掘野鼠草根而食。”','“射中匈奴斥候，赏百钱。然箭矢皆自备，一矢三钱，不足偿。”'],
+        sources: ['《居延汉简》甲渠候官·田惇禀','《居延新简》EPT51·207','《居延汉简》秋射功过簿']
+      },
+      'courier': {
+        lines: ['“日夜行二百里，负简三十斤。寒暑无间，遇雨雪则简湿墨洇。”','“病死驿卒三人，皆不得归葬。就地瘗于道旁，立一木牍记名。”','“家书至，未及拆阅，上命急递关内。揣怀中三日，始得就火抄阅。”'],
+        sources: ['《居延汉简》邮人徐迁传','《居延汉简》驿置道里簿','《居延汉简》邮卒私记']
+      },
+      'camp-follower': {
+        lines: ['“夫戍边五年，杳无音讯。随军缝补，日得半升，夜宿马厩旁。”','“小儿去年冻殁于账下，无以葬。军中老卒聚资购一羊裘裹之。”','“将军夫人赐旧衣一袭，众妇皆羡。然我独念夫之衣破，不得为补。”'],
+        sources: ['《居延汉简》卒妻李子妻牍','《居延汉简》戍卒家属名籍','《居延汉简》随军妇人私记']
+      }
+    };
+    let currentPerson = null, currentIdx = 0;
+    document.querySelectorAll('.person-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.person-card').forEach(c => c.style.border='2px solid #a88d64');
+        this.style.border='3px solid #4d2f14';
+        const p = this.dataset.person;
+        if (currentPerson === p) currentIdx++;
+        else { currentPerson = p; currentIdx = 0; }
+        const data = personData[p];
+        if (!data) return;
+        const idx = currentIdx % data.lines.length;
+        document.getElementById('speakerName').innerText = p==='old-soldier'?'🏹戍边老兵 田惇':(p==='courier'?'📯驿卒 徐迁':'👩随军妇人 阿季');
+        document.getElementById('dialogueContent').innerText = data.lines[idx];
+        document.getElementById('dialogueSource').innerText = '—— '+data.sources[idx];
+      });
+    });
+
+    // ==================== 时间轴模块 ====================
+    const slider = document.getElementById('timelineSlider');
+    const eras = [
+      { name:'西汉·居延', era:'西汉·前100年', icon:'🏜️🏯', coords:'📍居延遗址·北纬41°东经101°' },
+      { name:'明代·慕田峪', era:'明代·公元1570年', icon:'🧱🏰', coords:'📍慕田峪·北纬40°东经116°' },
+      { name:'现代·残存土墩', era:'现代·2024年遗存', icon:'🏚️🌾', coords:'📍敦煌汉长城·北纬40°东经93°' }
+    ];
+    function updateTimeline(val) {
+      let idx = val<=25?0:(val<=60?1:2);
+      document.getElementById('leftEra').innerText = eras[0].era;
+      document.getElementById('leftImage').innerHTML = eras[0].icon+' <span style="font-size:0.7rem;">AI复原</span>';
+      document.getElementById('leftCoords').innerText = eras[0].coords;
+      document.getElementById('rightEra').innerText = eras[idx].era;
+      document.getElementById('rightImage').innerHTML = eras[idx].icon+' <span style="font-size:0.7rem;">'+eras[idx].name.split('·')[1]+'</span>';
+      document.getElementById('rightCoords').innerText = eras[idx].coords;
+      document.getElementById('eraIndicator').innerText = eras[idx].name;
+    }
+    slider.addEventListener('input', function() { updateTimeline(parseInt(this.value)); });
+    updateTimeline(35);
+
+    // ==================== 简牍模块 ====================
+    const slipsData = [
+      { index:'甲', person:'戍卒 田惇', short:'九月戊申，惇再拜……', full:'九月戊申，惇再拜问：夫子毋恙乎？前所寄衣，已至。塞外苦寒，幸得羊裘。', trans:'九月初七，田惇叩首：夫君可安好？冬衣已收到。边塞太冷了，幸好有羊皮袄。', source:'《居延汉简》田惇家书 EPT51·209' },
+      { index:'乙', person:'戍卒 张放', short:'粮匮，日食二升……', full:'粮匮，日食二升，半稗半麦。同伍李季病亡，无棺殓。', trans:'粮食短缺，每天只分两升口粮，一半粗稗一半麦子。同伍李季病死了，没有棺材。', source:'《居延汉简》张放牍 EPF22·373' },
+      { index:'丙', person:'随军妇 阿季', short:'儿病死，葬于账侧……', full:'儿病死，葬于账侧。军中老卒怜我，赠一苇席。夫戍边五年，未得归。', trans:'孩子病死了，埋在帐篷旁。老兵送了一张苇席裹尸。丈夫守边五年未归。', source:'《居延汉简》阿季牍 EPT53·31' },
+      { index:'丁', person:'驿卒 徐迁', short:'家书揣怀中三日……', full:'家书至，未及拆，上令急递。揣怀中三日，夜乃得火读之。妻言家中米尽，儿啼饥。', trans:'家书到了没来得及拆，揣在怀里三天，晚上才借火光读信。妻子说家里米没了，孩子饿得哭。', source:'《居延汉简》徐迁私记 EPS4·C·8' }
+    ];
+    const rack = document.getElementById('bambooRack');
+    let expandedIdx = -1;
+    function renderSlips() {
+      rack.innerHTML = '';
+      slipsData.forEach((s, i) => {
+        let slip = document.createElement('div');
+        slip.className = 'bamboo-slip';
+        slip.style.cssText = 'width:100px; min-height:200px; background:linear-gradient(145deg,#dabf8e,#a5844a); border-radius:6px; padding:10px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; writing-mode:vertical-rl;';
+        slip.innerHTML = `<div style="writing-mode:horizontal-tb; font-size:0.7rem; background:#7a5d34; color:#f2e1c0; padding:0 10px; border-radius:30px;">简·${s.index}</div><div style="flex:1; display:flex; align-items:center; font-size:0.8rem;">${s.short}</div>`;
+        slip.addEventListener('click', function() {
+          if (expandedIdx === i) { expandedIdx = -1; resetDetail(); return; }
+          expandedIdx = i;
+          document.getElementById('detailIndex').innerText = '简牍 · '+s.index;
+          document.getElementById('detailPerson').innerText = s.person;
+          document.getElementById('detailContent').innerHTML = '<p style="font-style:italic;color:#4e3721;">【原文】'+s.full+'</p><p style="margin-top:6px;border-top:1px dashed #bcaa84;padding-top:6px;"><strong>📖 白话：</strong>'+s.trans+'</p>';
+          document.getElementById('detailSource').innerText = '—— '+s.source;
+        });
+        rack.appendChild(slip);
+      });
+    }
+    function resetDetail() {
+      document.getElementById('detailIndex').innerText = '简牍 · 卷';
+      document.getElementById('detailPerson').innerText = '居延汉简';
+      document.getElementById('detailContent').innerHTML = '<span style="color:#5d4a2b;opacity:0.6;font-style:italic;">点选上方竹简，览阅家书</span>';
+      document.getElementById('detailSource').innerText = '';
+    }
+    document.getElementById('resetBamboo').addEventListener('click', function() { expandedIdx = -1; resetDetail(); });
+    renderSlips();
+    resetDetail();
+  })();
+</script>
+</body>
+</html>
